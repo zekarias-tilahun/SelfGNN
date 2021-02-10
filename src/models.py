@@ -1,4 +1,4 @@
-from torch_geometric.nn import GCNConv, GATConv, SAGEConv, SGConv
+from torch_geometric.nn import GCNConv, GATConv, SAGEConv
 
 import torch.nn.functional as F
 import torch.nn as nn
