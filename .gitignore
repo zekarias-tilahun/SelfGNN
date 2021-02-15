@@ -1,0 +1,9 @@
+*.py[co]
+data/
+.idea/
+plots/
+imgs/
+R/
+results/
+.ipynb_checkpoints
+/**/.ipynb_checkpoints/

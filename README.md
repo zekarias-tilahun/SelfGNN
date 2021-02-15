@@ -57,3 +57,13 @@ Default is 1.
 `--final-parts:` or `-fp:`
 The number of final partitions, for using the improved version using Clustering.
 Default is 1.
+
+Supported dataset names
+-----------------------
+ - ```cora``` (Citation dataset)
+ - ```citeseer``` (Citation dataset)
+ - ```pubmed``` (Citation dataset)
+ - ```computers``` (Co-purchased products from Amazon computers category)
+ - ```photo``` (Co-purchased products from Amazon computers category)
+ - ```physics``` (Co-authorship graph from the physics category based on the Microsoft Academic Graph from the KDD Cup 2016 challenge)
+ - ```cs``` (Co-authorship graph from the computer science category based on the Microsoft Academic Graph from the KDD Cup 2016 challenge)

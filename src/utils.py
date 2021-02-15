@@ -123,16 +123,6 @@ def decide_config(root, name):
     elif name == 'cs' or name == 'physics':
         root = osp.join(root, "pyg", name)
         params = {"kwargs": {"root": root, "name": name}, "name": name, "class": Coauthor, "src": "pyg"}
-    elif name == 'dblp' or name == 'cora-full':
-        root = osp.join(root, "pyg", "full")
-        name = name.split("-")[0]
-        params = {"kwargs": {"root": root, "name": name}, "name": name, "class": CitationFull, "src": "pyg"}
-    elif name == 'flickr':
-        root = osp.join(root, "pyg", name)
-        params = {"kwargs": {"root": root}, "name": name, "class": Flickr, "src": "pyg"}
-    elif name == 'yelp':
-        root = osp.join(root, "pyg", name)
-        params = {"kwargs": {"root": root}, "name": name, "class": Yelp, "src": "pyg"}
     return params
 
 
