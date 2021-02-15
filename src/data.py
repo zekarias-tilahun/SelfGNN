@@ -12,6 +12,13 @@ import utils
 
 
 def download_pyg_data(config):
+    """
+    Downloads a dataset from the PyTorch Geometric library
+
+    :param config: A dict containing info on the dataset to be downloaded
+
+    :return: A tuple containing (root directory, dataset name, data directory)
+    """
     leaf_dir = config["kwargs"]["root"].split("/")[-1].strip()
     data_dir = osp.join(config["kwargs"]["root"], "" if config["name"] == leaf_dir else config["name"])
     dst_path = osp.join(data_dir, "raw", "data.pt")
@@ -24,6 +31,13 @@ def download_pyg_data(config):
 
 
 def download_data(root, name):
+    """
+    Download data from different repositories. Currently only PyTorch Geometric is supported
+
+    :param root: The root directory of the dataset
+    :param name: The name of the dataset
+    :return:
+    """
     config = utils.decide_config(root=root, name=name)
     if config["src"] == "pyg":
         return download_pyg_data(config)
@@ -31,6 +45,10 @@ def download_data(root, name):
 
 
 class Dataset(InMemoryDataset):
+
+    """
+    A PyTorch InMemoryDataset to build multi-view dataset through graph data augmentation
+    """
 
     def __init__(self, root="data", name='cora', num_parts=1, final_parts=1, augumentation=None, transform=None,
                  pre_transform=None):
@@ -75,6 +93,12 @@ class Dataset(InMemoryDataset):
         return [self.raw_dir, self.processed_dir, self.model_dir, self.result_dir]
 
     def process_cluster_data(self, data):
+        """
+        Augmented view data generation based on clustering.
+
+        :param data:
+        :return:
+        """
         data_list = []
         clusters = []
         num_parts, cluster_size = self.num_parts, self.num_parts // self.final_parts
@@ -118,6 +142,12 @@ class Dataset(InMemoryDataset):
         return data_list
 
     def process_full_batch_data(self, view1data):
+        """
+        Augmented view data generation using the full-batch data.
+
+        :param view1data:
+        :return:
+        """
         print("Processing full batch data")
         view2data = view1data if self.augumentation is None else self.augumentation(view1data)
         diff = abs(view2data.x.shape[1] - view1data.x.shape[1])
@@ -145,6 +175,11 @@ class Dataset(InMemoryDataset):
         pass
 
     def process(self):
+        """
+        Process either a full batch or cluster data.
+
+        :return:
+        """
         processed_path = osp.join(self.processed_dir, self.processed_file_names[0])
         if not osp.exists(processed_path):
             path = osp.join(self.raw_dir, self.raw_file_names[0])

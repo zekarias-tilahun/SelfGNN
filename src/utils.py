@@ -103,7 +103,7 @@ def parse_args():
     parser.add_argument("--heads", '-hd', nargs="+", type=int, default=[8, 1])
     parser.add_argument("--lr", '-lr', type=float, default=0.0001)
     parser.add_argument("--dropout", "-do", type=float, default=0.2)
-    parser.add_argument("--epochs", '-e', type=int, default=200)
+    parser.add_argument("--epochs", '-e', type=int, default=1000)
     return parser.parse_args()
 
 
