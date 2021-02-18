@@ -53,7 +53,7 @@ class ModelTrainer:
                 sys.stdout.write('\rEpoch {}/{}, batch {}/{}, loss {:.4f}'.format(epoch + 1, self._args.epochs, bc + 1,
                                                                                   self._dataset.final_parts, loss.data))
                 sys.stdout.flush()
-            if (epoch + 1) % 100 == 0:
+            if (epoch + 1) % self._args.cache_step == 0:
                 path = osp.join(self._dataset.model_dir,
                                 f"model.ep.{epoch + 1}.pt")
                 torch.save(self._model.state_dict(), path)

@@ -21,6 +21,11 @@ import torch
 
 class Augmentations:
 
+    """
+    A utility for graph data augmentation
+
+    """
+
     def __init__(self, method='gdc'):
         methods = {"ppr", "heat", "ldp", "paste", "split", "zscore", "katz"}
         assert method in methods
@@ -28,6 +33,13 @@ class Augmentations:
 
     @staticmethod
     def _split(data, permute=True):
+        """ 
+        Data augmentation is build by spliting data.x along the feature dimension.
+
+        :param data: the data object to be augmented
+        :param permute: Whether to permute along the feature dimension
+
+        """
         perm = torch.randperm(
             data.x.shape[1]) if permute else torch.arange(data.x.shape[1])
         x = data.x.clone()
@@ -42,6 +54,12 @@ class Augmentations:
 
     @staticmethod
     def _standardize(data):
+        """
+        Applies a zscore node feature data augmentation.
+
+        :param data: The data to be augmented
+        :return: a new augmented instance of the input data
+        """
         x = data.x
         mean, std = x.mean(dim=0), x.std(dim=0)
         new_data = data.clone()
@@ -50,6 +68,12 @@ class Augmentations:
 
     @staticmethod
     def _katz(data, beta=0.1, threshold=0.0001):
+        """ 
+        Applies a Katz-index graph topology augmentation
+
+        :param data: The data to be augmented
+        :return: a new augmented instance of the input data
+        """
         adj_matrix = to_scipy_sparse_matrix(data.edge_index)
         num_nodes = adj_matrix.shape[0]
         a_hat = adj_matrix + sp.eye(num_nodes)
@@ -68,7 +92,9 @@ class Augmentations:
         return new_data
 
     def __call__(self, data):
-
+        """
+        Applies different data augmentation techniques
+        """
         if self.method == 'ppr':
             return GDC(diffusion_kwargs={'alpha': 0.15, 'method': 'ppr'})(data.clone())
         elif self.method == 'heat':
@@ -158,6 +184,15 @@ def create_dirs(dirs):
 
 
 def create_masks(data):
+    """
+    Splits data into training, validation, and test splits in a stratified manner if
+    it is not already splitted. Each split is associated with a mask vector, which
+    specifies the indices for that split. The data will be modified in-place
+
+    :param data: Data object
+    :return: The modified data
+
+    """
     if not hasattr(data, "val_mask"):
         labels = data.y.numpy()
         counter = Counter(labels)
@@ -196,6 +231,9 @@ def create_masks(data):
 
 
 def evaluate(features, labels, test_rate=0.4, seed=0):
+    """
+    Evaluates the classification accuracy of the specified features using a k-fold cross validation, k=5.
+    """
     sf = ShuffleSplit(5, test_size=test_rate, random_state=seed)
     clf = OneVsRestClassifier(
         LogisticRegression(solver='liblinear'), n_jobs=-1)
