@@ -115,10 +115,10 @@ def parse_args():
                         help="Learning rate. Default is 0.0001.")
     parser.add_argument("--dropout", "-do", type=float,
                         default=0.2, help="Dropout rate. Default is 0.2")
-    parser.add_argument("--cache-step", '-cs', type=int, default=1000,
+    parser.add_argument("--cache-step", '-cs', type=int, default=100,
                         help="The step size to cache the model, that is, every cache_step the model is persisted. Default is 100.")
     parser.add_argument("--epochs", '-e', type=int,
-                        default=100, help="The number of epochs")
+                        default=1000, help="The number of epochs")
     return parser.parse_args()
 
 
@@ -129,6 +129,7 @@ def decide_config(root, name):
     :param name: The name of the dataset to be downloaded
     :return: A modified root dir, the name of the dataset class, and parameters associated to the class
     """
+    name = name.lower()
     if name == 'cora' or name == 'citeseer' or name == "pubmed":
         root = osp.join(root, "pyg", "planetoid")
         params = {"kwargs": {"root": root, "name": name},
@@ -141,6 +142,9 @@ def decide_config(root, name):
         root = osp.join(root, "pyg", name)
         params = {"kwargs": {"root": root, "name": name},
                   "name": name, "class": Coauthor, "src": "pyg"}
+    else:
+        raise Exception(
+            f"Unknown dataset name {name}, name has to be one of the following 'cora', 'citeseer', 'pubmed', 'photo', 'computers', 'cs', 'physics'")
     return params
 
 

@@ -50,6 +50,9 @@ Dropout rate, a value in [0, 1]. Deafult is 0.2
 `--epochs:` or `-e:`
 The number of epochs. Default is 1000.
 
+`--cache-step:` or `-cs:`
+The step size for caching the model. That is, every `--cache-step` the model will be persisted. Default is 100.
+
 `--init-parts:` or `-ip:`
 The number of initial partitions, for using the improved version using Clustering.
 Default is 1.
