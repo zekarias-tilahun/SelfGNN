@@ -1,4 +1,4 @@
-from torch_geometric.datasets import Planetoid, Coauthor, Amazon, CitationFull, Flickr, Yelp
+from torch_geometric.datasets import Planetoid, Coauthor, Amazon
 from torch_geometric.transforms import GDC, LocalDegreeProfile
 from torch_geometric.utils import to_scipy_sparse_matrix
 
