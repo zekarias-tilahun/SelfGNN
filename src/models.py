@@ -93,52 +93,52 @@ class SelfGNN(nn.Module):
 
     def __init__(self, layer_config, dropout=0.0, moving_average_decay=0.99, gnn_type='gcn', **kwargs):
         super().__init__()
-        self.online_encoder = Encoder(layer_config=layer_config, gnn_type=gnn_type, dropout=dropout, **kwargs)
-        self.target_encoder = None
-        self.target_ema_updater = EMA(moving_average_decay)
+        self.student_encoder = Encoder(layer_config=layer_config, gnn_type=gnn_type, dropout=dropout, **kwargs)
+        self.teacher_encoder = None
+        self.teacher_ema_updater = EMA(moving_average_decay)
         rep_dim = layer_config[-1]
-        self.online_predictor = nn.Sequential(nn.Linear(rep_dim, rep_dim), nn.BatchNorm1d(rep_dim),
-                                              nn.ReLU(inplace=True), nn.Dropout(dropout))
+        self.student_predictor = nn.Sequential(nn.Linear(rep_dim, rep_dim), nn.BatchNorm1d(rep_dim),
+                                               nn.ReLU(inplace=True), nn.Dropout(dropout))
 
-    @singleton('target_encoder')
-    def _get_target_encoder(self):
-        target_encoder = copy.deepcopy(self.online_encoder)
-        set_requires_grad(target_encoder, False)
-        return target_encoder
+    @singleton('teacher_encoder')
+    def _get_teacher_encoder(self):
+        teacher_encoder = copy.deepcopy(self.student_encoder)
+        set_requires_grad(teacher_encoder, False)
+        return teacher_encoder
 
     def reset_moving_average(self):
-        del self.target_encoder
-        self.target_encoder = None
+        del self.teacher_encoder
+        self.teacher_encoder = None
 
     def update_moving_average(self):
-        assert self.target_encoder is not None, 'target encoder has not been created yet'
-        update_moving_average(self.target_ema_updater, self.target_encoder, self.online_encoder)
+        assert self.teacher_encoder is not None, 'teacher encoder has not been created yet'
+        update_moving_average(self.teacher_ema_updater, self.teacher_encoder, self.student_encoder)
 
     def encode(self, x, edge_index, edge_weight=None, encoder=None):
-        encoder = self.online_encoder if encoder is None else encoder
+        encoder = self.student_encoder if encoder is None else encoder
         encoder.train(self.training)
         return encoder(x, edge_index, edge_weight)
 
     def forward(self, x1, x2, edge_index_v1, edge_index_v2, edge_weight_v1=None, edge_weight_v2=None):
         v1_enc = self.encode(x=x1, edge_index=edge_index_v1, edge_weight=edge_weight_v1)
-        v1_rep, v1_online = v1_enc if v1_enc[1] is not None else (v1_enc[0], v1_enc[0])
+        v1_rep, v1_student = v1_enc if v1_enc[1] is not None else (v1_enc[0], v1_enc[0])
         v2_enc = self.encode(x=x2, edge_index=edge_index_v2, edge_weight=edge_weight_v2)
-        v2_rep, v2_online = v2_enc if v2_enc[1] is not None else (v2_enc[0], v2_enc[0])
+        v2_rep, v2_student = v2_enc if v2_enc[1] is not None else (v2_enc[0], v2_enc[0])
 
-        v1_pred = self.online_predictor(v1_online)
-        v2_pred = self.online_predictor(v2_online)
+        v1_pred = self.student_predictor(v1_student)
+        v2_pred = self.student_predictor(v2_student)
         with torch.no_grad():
-            target_encoder = self._get_target_encoder()
-            v1_enc = self.encode(x=x1, edge_index=edge_index_v1, edge_weight=edge_weight_v1, encoder=target_encoder)
-            v1_target = v1_enc[1] if v1_enc[1] is not None else v1_enc[0]
-            v2_enc = self.encode(x=x2, edge_index=edge_index_v2, edge_weight=edge_weight_v2, encoder=target_encoder)
-            v2_target = v2_enc[1] if v2_enc[1] is not None else v2_enc[0]
+            teacher_encoder = self._get_teacher_encoder()
+            v1_enc = self.encode(x=x1, edge_index=edge_index_v1, edge_weight=edge_weight_v1, encoder=teacher_encoder)
+            v1_teacher = v1_enc[1] if v1_enc[1] is not None else v1_enc[0]
+            v2_enc = self.encode(x=x2, edge_index=edge_index_v2, edge_weight=edge_weight_v2, encoder=teacher_encoder)
+            v2_teacher = v2_enc[1] if v2_enc[1] is not None else v2_enc[0]
 
-        loss1 = loss_fn(v1_pred, v2_target.detach())
-        loss2 = loss_fn(v2_pred, v1_target.detach())
+        loss1 = loss_fn(v1_pred, v2_teacher.detach())
+        loss2 = loss_fn(v2_pred, v1_teacher.detach())
 
         loss = loss1 + loss2
-        return v1_online, v2_online, loss.mean()
+        return v1_student, v2_student, loss.mean()
 
 
 def get_encoder(layer_config, gnn_type, **kwargs):
