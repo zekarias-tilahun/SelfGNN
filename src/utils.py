@@ -28,7 +28,8 @@ class Augmentations:
 
     @staticmethod
     def _split(data, permute=True):
-        perm = torch.randperm(data.x.shape[1]) if permute else torch.arange(data.x.shape[1])
+        perm = torch.randperm(
+            data.x.shape[1]) if permute else torch.arange(data.x.shape[1])
         x = data.x.clone()
         x = x[:, perm]
         size = x.shape[1] // 2
@@ -52,7 +53,8 @@ class Augmentations:
         adj_matrix = to_scipy_sparse_matrix(data.edge_index)
         num_nodes = adj_matrix.shape[0]
         a_hat = adj_matrix + sp.eye(num_nodes)
-        d_hat = sp.diags(np.array(1 / np.sqrt(a_hat.sum(axis=1))).reshape(num_nodes))
+        d_hat = sp.diags(
+            np.array(1 / np.sqrt(a_hat.sum(axis=1))).reshape(num_nodes))
         a_hat = d_hat @ a_hat @ d_hat
         temp = sp.eye(num_nodes) - beta * a_hat
         h_katz = (sp.linalg.inv(temp.tocsc()) * beta * a_hat).toarray()
@@ -93,17 +95,30 @@ class Augmentations:
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", "-r", type=str, default="data")
-    parser.add_argument("--name", "-n", type=str, default="cora")
-    parser.add_argument("--init-parts", "-ip", type=int, default=1)
-    parser.add_argument("--final-parts", "-fp", type=int, default=1)
-    parser.add_argument("--model", '-m', type=str, default="gcn")
-    parser.add_argument("--aug", '-a', type=str, default="split")
-    parser.add_argument("--layers", "-l", nargs="+", default=[512, 128])
-    parser.add_argument("--heads", '-hd', nargs="+", type=int, default=[8, 1])
-    parser.add_argument("--lr", '-lr', type=float, default=0.0001)
-    parser.add_argument("--dropout", "-do", type=float, default=0.2)
-    parser.add_argument("--epochs", '-e', type=int, default=1000)
+    parser.add_argument("--root", "-r", type=str, default="data",
+                        help="Path to data directory, where all the datasets will be placed. Default is 'data'")
+    parser.add_argument("--name", "-n", type=str, default="cora",
+                        help="Name of the dataset. Supported names are: cora, citeseer, pubmed, photo, computers, cs, and physics")
+    parser.add_argument("--model", '-m', type=str, default="gcn",
+                        help="The type of GNN architecture. Supported architectures are: gcn, gat, and sage. Default is gcn")
+    parser.add_argument("--aug", '-a', type=str, default="split",
+                        help="The name of data augmentation technique. Valid options are: ppr, hk, katz, split, zscore, ldp, paste. Default is split.")
+    parser.add_argument("--layers", "-l", nargs="+", default=[
+                        512, 128], help="The number of units of each layer of the GNN. Default is [512, 128]")
+    parser.add_argument("--init-parts", "-ip", type=int, default=1,
+                        help="The number of initial partitions. Default is 1. Applicable for ClusterSelfGNN")
+    parser.add_argument("--final-parts", "-fp", type=int, default=1,
+                        help="The number of final partitions. Default is 1. Applicable for ClusterSelfGNN")
+    parser.add_argument("--heads", '-hd', nargs="+", type=int, default=[
+                        8, 1], help="The number of heads of each layer of a GAT architecture. Default is [8, 1]. Applicable for gat model.")
+    parser.add_argument("--lr", '-lr', type=float, default=0.0001,
+                        help="Learning rate. Default is 0.0001.")
+    parser.add_argument("--dropout", "-do", type=float,
+                        default=0.2, help="Dropout rate. Default is 0.2")
+    parser.add_argument("--cache-step", '-cs', type=int, default=1000,
+                        help="The step size to cache the model, that is, every cache_step the model is persisted. Default is 100.")
+    parser.add_argument("--epochs", '-e', type=int,
+                        default=100, help="The number of epochs")
     return parser.parse_args()
 
 
@@ -116,13 +131,16 @@ def decide_config(root, name):
     """
     if name == 'cora' or name == 'citeseer' or name == "pubmed":
         root = osp.join(root, "pyg", "planetoid")
-        params = {"kwargs": {"root": root, "name": name}, "name": name, "class": Planetoid, "src": "pyg"}
+        params = {"kwargs": {"root": root, "name": name},
+                  "name": name, "class": Planetoid, "src": "pyg"}
     elif name == 'computers' or name == "photo":
         root = osp.join(root, "pyg", name)
-        params = {"kwargs": {"root": root, "name": name}, "name": name, "class": Amazon, "src": "pyg"}
+        params = {"kwargs": {"root": root, "name": name},
+                  "name": name, "class": Amazon, "src": "pyg"}
     elif name == 'cs' or name == 'physics':
         root = osp.join(root, "pyg", name)
-        params = {"kwargs": {"root": root, "name": name}, "name": name, "class": Coauthor, "src": "pyg"}
+        params = {"kwargs": {"root": root, "name": name},
+                  "name": name, "class": Coauthor, "src": "pyg"}
     return params
 
 
@@ -159,10 +177,13 @@ def create_masks(data):
             dev_labels.append(d_lbl)
             start = end
 
-        test_index, dev_index = np.concatenate(test_labels), np.concatenate(dev_labels)
+        test_index, dev_index = np.concatenate(
+            test_labels), np.concatenate(dev_labels)
         data_index = np.arange(labels.shape[0])
-        test_mask = torch.tensor(np.in1d(data_index, test_index), dtype=torch.bool)
-        dev_mask = torch.tensor(np.in1d(data_index, dev_index), dtype=torch.bool)
+        test_mask = torch.tensor(
+            np.in1d(data_index, test_index), dtype=torch.bool)
+        dev_mask = torch.tensor(
+            np.in1d(data_index, dev_index), dtype=torch.bool)
         train_mask = ~(dev_mask + test_mask)
         data.train_mask = train_mask
         data.val_mask = dev_mask
@@ -172,7 +193,8 @@ def create_masks(data):
 
 def evaluate(features, labels, test_rate=0.4, seed=0):
     sf = ShuffleSplit(5, test_size=test_rate, random_state=seed)
-    clf = OneVsRestClassifier(LogisticRegression(solver='liblinear'), n_jobs=-1)
+    clf = OneVsRestClassifier(
+        LogisticRegression(solver='liblinear'), n_jobs=-1)
     results = []
     features = StandardScaler().fit_transform(features)
     for train_index, test_index in sf.split(features, labels):
@@ -189,7 +211,7 @@ def evaluate(features, labels, test_rate=0.4, seed=0):
 
 def get_device_id(cuda_is_available):
     if not cuda_is_available:
-        return -1
+        return "cpu"
     gpu_stats = subprocess.check_output(["nvidia-smi", "--format=csv", "--query-gpu=memory.used,memory.free"]).decode(
         'utf-8')
     gpu_stats = gpu_stats.strip().split('\n')

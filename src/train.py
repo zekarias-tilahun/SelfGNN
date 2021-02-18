@@ -20,12 +20,14 @@ class ModelTrainer:
 
     def _init(self):
         args = self._args
-        self._device = torch.device(utils.get_device_id(torch.cuda.is_available()))
+        self._device = torch.device(
+            utils.get_device_id(torch.cuda.is_available()))
         self._aug = utils.Augmentations(method=args.aug)
 
         self._dataset = data.Dataset(root=args.root, name=args.name, num_parts=args.init_parts,
                                      final_parts=args.final_parts, augumentation=self._aug)
-        self._loader = DataLoader(dataset=self._dataset)  # [self._dataset.data]
+        self._loader = DataLoader(
+            dataset=self._dataset)  # [self._dataset.data]
         print(f"Data Augmentation method {args.aug}")
         print(f"Data: {self._dataset.data}")
         hidden_layers = [int(l) for l in args.layers]
@@ -33,7 +35,8 @@ class ModelTrainer:
         self._model = models.SelfGNN(layer_config=layers, dropout=args.dropout, gnn_type=args.model,
                                      heads=args.heads).to(self._device)
         print(self._model)
-        self._optimizer = torch.optim.Adam(params=self._model.parameters(), lr=args.lr)
+        self._optimizer = torch.optim.Adam(
+            params=self._model.parameters(), lr=args.lr)
 
     def train(self):
         self._model.train()
@@ -51,7 +54,8 @@ class ModelTrainer:
                                                                                   self._dataset.final_parts, loss.data))
                 sys.stdout.flush()
             if (epoch + 1) % 100 == 0:
-                path = osp.join(self._dataset.model_dir, f"model.ep.{epoch + 1}.pt")
+                path = osp.join(self._dataset.model_dir,
+                                f"model.ep.{epoch + 1}.pt")
                 torch.save(self._model.state_dict(), path)
         print()
 
@@ -66,13 +70,15 @@ class ModelTrainer:
                 edge_index_v2=batch_data.edge_index2,
                 edge_weight_v1=batch_data.edge_attr,
                 edge_weight_v2=batch_data.edge_attr2)
-            batch_out = torch.cat([v1_output, v2_output], dim=1).detach().cpu().numpy()
+            batch_out = torch.cat([v1_output, v2_output],
+                                  dim=1).detach().cpu().numpy()
             batch_nodes = batch_data.nodes.cpu().numpy()
             batch_y = batch_data.y.detach().cpu().numpy()
             batch_trm = batch_data.train_mask.detach().cpu().numpy()
             batch_dem = batch_data.dev_mask.detach().cpu().numpy()
             batch_tem = batch_data.test_mask.detach().cpu().numpy()
-            output = list(zip(batch_nodes, batch_out, batch_y, batch_trm, batch_dem, batch_tem))
+            output = list(zip(batch_nodes, batch_out, batch_y,
+                              batch_trm, batch_dem, batch_tem))
             outputs += output
 
         outputs = sorted(outputs, key=lambda l: l[0])
@@ -86,7 +92,8 @@ class ModelTrainer:
 
     def evaluate_epoch(self, epoch):
         path = osp.join(self._dataset.model_dir, f"model.ep.{epoch}.pt")
-        self._model.load_state_dict(torch.load(path, map_location=self._device))
+        self._model.load_state_dict(
+            torch.load(path, map_location=self._device))
         self.infer()
         dev_acu = self.evaluate(partition="dev")
         test_acu = self.evaluate(partition="test")
@@ -106,6 +113,7 @@ class ModelTrainer:
                     best_epoch = epoch, dev_acu, test_acu
                 print(epoch, dev_acu, test_acu)
 
+        print(best_epoch)
         dev_accuracy, dev_std = best_epoch[1]
         test_accuracy, test_std = best_epoch[2]
         print(f"The best epoch is: {best_epoch[0]}")
