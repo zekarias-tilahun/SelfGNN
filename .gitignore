@@ -1,9 +1,11 @@
 *.py[co]
 data/
 .idea/
+.vscode/
 plots/
 imgs/
 R/
 results/
 .ipynb_checkpoints
 /**/.ipynb_checkpoints/
+*workspace
