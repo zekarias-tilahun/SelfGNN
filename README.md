@@ -1,17 +1,17 @@
 # SelfGNN
+
 A PyTorch implementation of SelfGNN: Self-supervised Graph Neural Networks without explicit negative sampling
 
-Requirements!
--------------
-  - Python 3.6+
-  - PyTorch 1.6+
-  - PyTorch Geometric 1.6+
-  - Numpy 1.17.2+
-  - Networkx 2.3+
-  - SciPy 1.5.4+ 
+## Requirements!
 
-Example usage
--------------
+-   Python 3.6+
+-   PyTorch 1.6+
+-   PyTorch Geometric 1.6+
+-   Numpy 1.17.2+
+-   Networkx 2.3+
+-   SciPy 1.5.4+
+
+## Example usage
 
 ```sh
 $ python src/train.py
@@ -19,14 +19,14 @@ $ python src/train.py
 
 The following options can be specified for src/train.py
 
-`--root:` or `-r:` 
-A path to a root directory to put all the datasets. Default is ```./data```
+`--root:` or `-r:`
+A path to a root directory to put all the datasets. Default is `./data`
 
 `--name:` or `-n:`
-The name of the datasets. Default is ```cora```. Check the [```Supported dataset names```](#Supported-dataset-names) 
+The name of the datasets. Default is `cora`. Check the [`Supported dataset names`](#Supported-dataset-names)
 
 `--model:` or `-m:`
-The type of GNN architecture to use. Curently three architectres are supported (gcn, gat, sage). 
+The type of GNN architecture to use. Curently three architectres are supported (gcn, gat, sage).
 Default is gcn.
 
 `--aug:` or `-a:`
@@ -58,12 +58,14 @@ Default is 1.
 The number of final partitions, for using the improved version using Clustering.
 Default is 1.
 
-Supported dataset names
------------------------
- - ```cora``` (Citation dataset)
- - ```citeseer``` (Citation dataset)
- - ```pubmed``` (Citation dataset)
- - ```computers``` (Co-purchased products from Amazon computers category)
- - ```photo``` (Co-purchased products from Amazon computers category)
- - ```physics``` (Co-authorship graph from the physics category based on the Microsoft Academic Graph from the KDD Cup 2016 challenge)
- - ```cs``` (Co-authorship graph from the computer science category based on the Microsoft Academic Graph from the KDD Cup 2016 challenge)
+## Supported dataset names
+
+| name      | Description | Edges   | Features | Classes | Description                  |
+| --------- | ----------- | ------- | -------- | ------- | ---------------------------- |
+| Cora      | 2,708       | 5,278   | 1,433    | 7       | Citation Network             |
+| Citeseer  | 3,327       | 4,552   | 3,703    | 6       | Citation Network             |
+| Pubmed    | 19,717      | 44,324  | 500      | 3       | Citation Network             |
+| Photo     | 7,487       | 119,043 | 745      | 8       | Co-purchased product network |
+| Computers | 13,381      | 245,778 | 767      | 10      | Co-purchased product network |
+| CS        | 18,333      | 81,894  | 6,805    | 15      | Collaboration network        |
+| Physics   | 34,493      | 247,962 | 8,415    | 5       | Collaboration network        |
