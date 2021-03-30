@@ -136,6 +136,9 @@ class ModelTrainer:
 
 
 def main():
+    """
+    Comment
+    """
     args = utils.parse_args()
     trainer = ModelTrainer(args)
     trainer.train()

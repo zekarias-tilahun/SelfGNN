@@ -234,11 +234,11 @@ def create_masks(data):
     return data
 
 
-def evaluate(features, labels, test_rate=0.4, seed=0):
+def evaluate(features, labels, test_fold=0.4, seed=0):
     """
     Evaluates the classification accuracy of the specified features using a k-fold cross validation, k=5.
     """
-    sf = ShuffleSplit(5, test_size=test_rate, random_state=seed)
+    sf = ShuffleSplit(5, test_size=test_fold, random_state=seed)
     clf = OneVsRestClassifier(
         LogisticRegression(solver='liblinear'), n_jobs=-1)
     results = []

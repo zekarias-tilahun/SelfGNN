@@ -1,6 +1,8 @@
 # SelfGNN
 
-A PyTorch implementation of SelfGNN: Self-supervised Graph Neural Networks without explicit negative sampling
+A PyTorch implementation of "SelfGNN: Self-supervised Graph Neural Networks without explicit negative sampling" [paper](https://arxiv.org/abs/2103.14958), which will appear in The International Workshop on Self-Supervised Learning for the Web (SSL'21) @ the Web Conference 2021 (WWW'21).
+
+[paper](https://arxiv.org/abs/2103.14958)
 
 ## Requirements!
 
@@ -72,3 +74,7 @@ Default is 1.
 | `Computers` | 13,381      | 245,778 | 767      | 10      | Co-purchased products network |
 | `CS`        | 18,333      | 81,894  | 6,805    | 15      | Collaboration network         |
 | `Physics`   | 34,493      | 247,962 | 8,415    | 5       | Collaboration network         |
+
+
+Any dataset from the PyTorch Geometric library can be used, however `SelfGNN` is tested only on
+the above datasets.
