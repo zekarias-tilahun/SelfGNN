@@ -77,3 +77,20 @@ Default is 1.
 
 Any dataset from the PyTorch Geometric library can be used, however `SelfGNN` is tested only on
 the above datasets.
+
+
+Citing
+------
+
+If you find this research helpful, please cite it as
+
+```
+@misc{kefato2021selfsupervised,
+      title={Self-supervised Graph Neural Networks without explicit negative sampling}, 
+      author={Zekarias T. Kefato and Sarunas Girdzijauskas},
+      year={2021},
+      eprint={2103.14958},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
