@@ -2,7 +2,6 @@
 
 A PyTorch implementation of "SelfGNN: Self-supervised Graph Neural Networks without explicit negative sampling" [paper](https://arxiv.org/abs/2103.14958), which will appear in The International Workshop on Self-Supervised Learning for the Web (SSL'21) @ the Web Conference 2021 (WWW'21).
 
-[paper](https://arxiv.org/abs/2103.14958)
 
 ## Requirements!
 
