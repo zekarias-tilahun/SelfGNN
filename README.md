@@ -5,12 +5,7 @@ A PyTorch implementation of "SelfGNN: Self-supervised Graph Neural Networks with
 ## Note
 This is an ongoing work and the repository is subjected to continuous updates.
 
-## :collision: Update (Apr 9, 2021).
 
-- Both the paper and the source code are updated following the discussion on [this issue](https://github.com/zekarias-tilahun/SelfGNN/issues/1)
-- Ablation study on the impact of ```BatchNorm``` added following reviewers feedback from SSL'21
-   - The findings show that ```SelfGNN``` with out batch normalization is not stable and often its performance drops significantly
-   - Layer Normalization behaves similar to the finding of no ```BatchNorm```
 
 ## Requirements!
 
@@ -26,6 +21,14 @@ This is an ongoing work and the repository is subjected to continuous updates.
 ```sh
 $ python src/train.py
 ```
+
+## :collision: Update (Apr 9, 2021).
+
+- Both the paper and the source code are updated following the discussion on [this issue](https://github.com/zekarias-tilahun/SelfGNN/issues/1)
+- Ablation study on the impact of ```BatchNorm``` added following reviewers feedback from SSL'21
+   - The findings show that ```SelfGNN``` with out batch normalization is not stable and often its performance drops significantly
+   - Layer Normalization behaves similar to the finding of no ```BatchNorm```
+   
 
 The following options can be specified for src/train.py
 
