@@ -22,7 +22,9 @@ This is an ongoing work and the repository is subjected to continuous updates.
 $ python src/train.py
 ```
 
-## :collision: Update (Apr 9, 2021).
+## :collision: Updates 
+
+### Apr 9, 2021
 
 - Both the paper and the source code are updated following the discussion on [this issue](https://github.com/zekarias-tilahun/SelfGNN/issues/1)
 - Ablation study on the impact of ```BatchNorm``` added following reviewers feedback from SSL'21
