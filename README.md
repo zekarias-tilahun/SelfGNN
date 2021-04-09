@@ -33,7 +33,7 @@ $ python src/train.py
 ## Possible options for training SelfGNN
 
 
-The following options can be specified for src/train.py
+The following options can be passed to `src/train.py`
 
 `--root:` or `-r:`
 A path to a root directory to put all the datasets. Default is `./data`
