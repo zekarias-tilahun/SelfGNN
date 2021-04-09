@@ -28,7 +28,10 @@ $ python src/train.py
 - Ablation study on the impact of ```BatchNorm``` added following reviewers feedback from SSL'21
    - The findings show that ```SelfGNN``` with out batch normalization is not stable and often its performance drops significantly
    - Layer Normalization behaves similar to the finding of no ```BatchNorm```
+
    
+## Possible options for training SelfGNN
+
 
 The following options can be specified for src/train.py
 
