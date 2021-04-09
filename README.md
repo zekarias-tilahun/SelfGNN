@@ -2,6 +2,15 @@
 
 A PyTorch implementation of "SelfGNN: Self-supervised Graph Neural Networks without explicit negative sampling" [paper](https://arxiv.org/abs/2103.14958), which will appear in The International Workshop on Self-Supervised Learning for the Web (SSL'21) @ the Web Conference 2021 (WWW'21).
 
+## Note
+This is an ongoing work and the repository is subjected to continuous updates.
+
+## :collision: Update (Apr 9, 2021).
+
+- Both the paper and the source code are updated following the discussion on [this issue](https://github.com/zekarias-tilahun/SelfGNN/issues/1)
+- Ablation study on the impact of ```BatchNorm``` added following reviewers feedback from SSL'21
+   - The findings show that ```SelfGNN``` with out batch normalization is not stable and often its performance drops significantly
+   - Layer Normalization behaves similar to the finding of no ```BatchNorm```
 
 ## Requirements!
 
