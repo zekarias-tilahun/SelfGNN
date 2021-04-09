@@ -177,7 +177,7 @@ class ModelTrainer:
         """
         print("Evaluating ...")
         emb_dim, num_class = self._embeddings.shape[1], self._labels.unique().shape[0]
-        loss_fn = 
+        
         dev_accs, test_accs = [], []
         
         for i in range(50):
