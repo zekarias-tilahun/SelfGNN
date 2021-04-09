@@ -1,6 +1,5 @@
 from torch_geometric.datasets import Planetoid, Coauthor, Amazon
 from torch_geometric.transforms import GDC, LocalDegreeProfile
-from torch_geometric.utils import to_scipy_sparse_matrix
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.multiclass import OneVsRestClassifier
@@ -78,8 +77,8 @@ class Augmentations:
         :param data: The data to be augmented
         :return: a new augmented instance of the input data
         """
-        adj_matrix = to_scipy_sparse_matrix(data.edge_index)
-        num_nodes = adj_matrix.shape[0]
+        num_nodes = data.num_nodes
+        adj_matrix = to_scipy_sparse_matrix(num_nodes=num_nodes, edge_index=data.edge_index, edge_weight=data.edge_attr)
         a_hat = adj_matrix + sp.eye(num_nodes)
         d_hat = sp.diags(
             np.array(1 / np.sqrt(a_hat.sum(axis=1))).reshape(num_nodes))
@@ -100,7 +99,8 @@ class Augmentations:
         Applies different data augmentation techniques
         """
         if self.method == 'ppr':
-            return GDC(diffusion_kwargs={'alpha': 0.15, 'method': 'ppr'})(data.clone())
+            return GDC(diffusion_kwargs={'alpha': 0.15, 'method': 'ppr'}, 
+                       sparsification_kwargs={'method':'threshold', 'avg_degree': 30})(data.clone())
         elif self.method == 'heat':
             return GDC(diffusion_kwargs={'t': 3, 'method': 'heat'})(data.clone())
         elif self.method == "katz":
@@ -232,6 +232,14 @@ def create_masks(data):
         data.val_mask = dev_mask
         data.test_mask = test_mask
     return data
+
+
+def to_scipy_sparse_matrix(num_nodes, edge_index, edge_weight=None):
+    data = np.ones(edge_index.shape[1], dtype='float32') if edge_weight is None else edge_weight.numpy()
+    row = edge_index[0].numpy()
+    col = edge_index[1].numpy()
+    return sp.csr_matrix((data, (row, col)), shape=(num_nodes, num_nodes))
+    
 
 
 def evaluate(features, labels, test_fold=0.4, seed=0):
