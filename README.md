@@ -26,17 +26,10 @@ $ python src/train.py
 
 ## update 2:
 
-+-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|  Modules  |                                                                                     Normalization Strategy                                                                                    |
-+-----------+-------------------------------------------------+--------------------------------------------------+---------------------------------------------------+--------------------------------------+
-|  Encoder  |                        BN                       |                        LN                        |                         -                         |                   -                  |
-+-----------+------------------------+------------------------+------------------------+-------------------------+-------------------------+-------------------------+--------------------------------------+
-| Projector |           BN           |            -           |           LN           |            -            |            BN           |            LN           |                   -                  |
-+-----------+------------+-----------+------------+-----------+------------+-----------+------------+------------+------------+------------+------------+------------+------------+------------+------------+
-| Predictor |     BN     |     -     |     BN     |     -     |     LN     |     -     |     LN     |      -     |     BN     |      -     |     LN     |      -     |     BN     |     LN     |      -     |
-+-----------+------------+-----------+------------+-----------+------------+-----------+------------+------------+------------+------------+------------+------------+------------+------------+------------+
-|  SelfGNN  | 94.05±0.23 | 94.2±0.17 | 94.01±0.20 | 93.9±0.18 | 81.42±2.43 | 84.1±1.58 | 92.39±0.38 | 91.93±0.40 | 90.01±0.09 | 90.12±0.07 | 45.34±2.47 | 52.92±3.37 | 91.13±0.13 | 50.64±2.84 | 50.35±2.73 |
-+-----------+------------+-----------+------------+-----------+------------+-----------+------------+------------+------------+------------+------------+------------+------------+------------+------------+
+Contrary to what we've claimed in the paper, [studies](https://arxiv.org/abs/2010.10241) argue and empirically show that Batch Norm does not introduce implicit negative samples.
+Instead, mainly it compensate for improper initialization. New experiments that we have carried out, as shown in the table below, seems to confirm this argument.
+
+![Normalization experimental results](./img/norm_experiment.png)
 
 ## update 1:
 
@@ -68,6 +61,13 @@ Default is split.
 `--layers:` or `-l:`
 One or more integer values specifying the number of units for each GNN layer.
 Default is 512 128
+
+`--norms:` or `-nm:`
+The normalization scheme for each module. Default is `batch`. That is, a Batch Norm will be used in the prediction head. 
+Specifying two inputs, e.g. ```--norms batch layer```, allows the model to use batch norm in the GNN encoder, and layer 
+norm in the prediction head. Finally, specifying three inputs, e.g., ```--norms no batch layer``` activates the 
+projection head and normalization is used as: No norm for GNN encoder, Batch Norm for projection head and Layer Norm 
+for the prediction head.
 
 `--heads:` or `-hd:`
 One or more values specifying the number of heads for each GAT layer.
