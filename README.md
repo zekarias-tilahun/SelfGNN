@@ -24,7 +24,7 @@ $ python src/train.py
 
 ## :collision: Updates 
 
-## update 2:
+#### update 2
 
 Contrary to what we've claimed in the paper, [studies](https://arxiv.org/abs/2010.10241) argue and empirically show that Batch Norm does not introduce implicit negative samples.
 Instead, mainly it compensate for improper initialization. New experiments that we have carried out, as shown in the table below, seems to confirm this argument.
@@ -32,7 +32,7 @@ Instead, mainly it compensate for improper initialization. New experiments that 
 
 ![Normalization experimental results](./img/norm_experiment.png)
 
-## update 1:
+#### update 1
 
 - Both the paper and the source code are updated following the discussion on [this issue](https://github.com/zekarias-tilahun/SelfGNN/issues/1)
 - Ablation study on the impact of ```BatchNorm``` added following reviewers feedback from SSL'21
