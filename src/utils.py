@@ -121,7 +121,15 @@ class Augmentations:
             return self.method.upper()
         else:
             return self.method.title()
-
+        
+        
+def get_norm_configs(norms):
+    if len(norms) == 1:
+        return {"encoder_norm": False, "prj_head_norm": False, "prd_head_norm": norms[0]}
+    elif len(norms) == 2:
+        return {"encoder_norm": norms[0], "prj_head_norm": False, "prd_head_norm": norms[1]}
+    elif len(norms) == 3:
+        return {"encoder_norm": norms[0], "prj_head_norm": norms[1], "prd_head_norm": norms[2]}
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -133,6 +141,11 @@ def parse_args():
                         help="The type of GNN architecture. Supported architectures are: gcn, gat, and sage. Default is gcn")
     parser.add_argument("--aug", '-a', type=str, default="split",
                         help="The name of data augmentation technique. Valid options are: ppr, hk, katz, split, zscore, ldp, paste. Default is split.")
+    parser.add_argument("--norms", "-nm", nargs="+", default=['batch'], 
+                        help="The normalization scheme for each module. Default is ['batch']. That is, a batch norm will be used in the prediction head. " 
+                        "Specifying two inputs, e.g. ['batch', 'layer'], allows the model to use batch norm in the GNN encoder, and layer norm in the "
+                        "prediction head. Finally, specifying three inputs, e.g., ['no', 'batch', 'layer'] activates the projection head and "
+                        "normalization is used as: No norm for GNN encoder, Batch Norm for projection head and Layer Norm for prediction head.")
     parser.add_argument("--layers", "-l", nargs="+", default=[
                         512, 128], help="The number of units of each layer of the GNN. Default is [512, 128]")
     parser.add_argument("--init-parts", "-ip", type=int, default=1,
@@ -150,32 +163,6 @@ def parse_args():
     parser.add_argument("--epochs", '-e', type=int,
                         default=1000, help="The number of epochs")
     return parser.parse_args()
-
-
-def decide_config(root, name):
-    """
-    Create a configuration to download datasets
-    :param root: A path to a root directory where data will be stored
-    :param name: The name of the dataset to be downloaded
-    :return: A modified root dir, the name of the dataset class, and parameters associated to the class
-    """
-    name = name.lower()
-    if name == 'cora' or name == 'citeseer' or name == "pubmed":
-        root = osp.join(root, "pyg", "planetoid")
-        params = {"kwargs": {"root": root, "name": name},
-                  "name": name, "class": Planetoid, "src": "pyg"}
-    elif name == 'computers' or name == "photo":
-        root = osp.join(root, "pyg", name)
-        params = {"kwargs": {"root": root, "name": name},
-                  "name": name, "class": Amazon, "src": "pyg"}
-    elif name == 'cs' or name == 'physics':
-        root = osp.join(root, "pyg", name)
-        params = {"kwargs": {"root": root, "name": name},
-                  "name": name, "class": Coauthor, "src": "pyg"}
-    else:
-        raise Exception(
-            f"Unknown dataset name {name}, name has to be one of the following 'cora', 'citeseer', 'pubmed', 'photo', 'computers', 'cs', 'physics'")
-    return params
 
 
 def create_dirs(dirs):

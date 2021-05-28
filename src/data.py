@@ -1,5 +1,8 @@
+from torch_geometric.datasets import Planetoid, Coauthor, Amazon, WikiCS
 from torch_geometric.data import Data, ClusterData, InMemoryDataset
 from torch_geometric.utils import subgraph
+
+from tqdm import tqdm
 
 import numpy as np
 import torch.nn.functional as F
@@ -9,39 +12,6 @@ import os.path as osp
 import sys
 
 import utils
-
-
-def download_pyg_data(config):
-    """
-    Downloads a dataset from the PyTorch Geometric library
-
-    :param config: A dict containing info on the dataset to be downloaded
-
-    :return: A tuple containing (root directory, dataset name, data directory)
-    """
-    leaf_dir = config["kwargs"]["root"].split("/")[-1].strip()
-    data_dir = osp.join(config["kwargs"]["root"], "" if config["name"] == leaf_dir else config["name"])
-    dst_path = osp.join(data_dir, "raw", "data.pt")
-    if not osp.exists(dst_path):
-        DatasetClass = config["class"]
-        dataset = DatasetClass(**config["kwargs"])
-        utils.create_masks(data=dataset.data)
-        torch.save((dataset.data, dataset.slices), dst_path)
-    return config["kwargs"]["root"], config["name"], data_dir
-
-
-def download_data(root, name):
-    """
-    Download data from different repositories. Currently only PyTorch Geometric is supported
-
-    :param root: The root directory of the dataset
-    :param name: The name of the dataset
-    :return:
-    """
-    config = utils.decide_config(root=root, name=name)
-    if config["src"] == "pyg":
-        return download_pyg_data(config)
-    # TODO: other data sources
 
 
 class Dataset(InMemoryDataset):
@@ -55,49 +25,70 @@ class Dataset(InMemoryDataset):
         self.num_parts = num_parts
         self.final_parts = final_parts
         self.augumentation = augumentation
-        self.root, self.name, self.data_dir = download_data(root=root, name=name)
+        super().__init__(root=osp.join(root, name), transform=transform, pre_transform=pre_transform)
+        self.data, self.slices = torch.load(self.processed_paths[0])
+        
+    def download(self):
         utils.create_dirs(self.dirs)
-        super().__init__(root=self.data_dir, transform=transform, pre_transform=pre_transform)
-        path = osp.join(self.data_dir, "processed", self.processed_file_names[0])
-        self.data, self.slices = torch.load(path)
+        dataset = fetch_dataset(*osp.split(self.root))
+        utils.create_masks(data=dataset.data)
+        data = dataset.data
+        edge_attr = torch.ones(data.edge_index.shape[1]) if data.edge_attr is None else data.edge_attr
+        data.edge_attr = edge_attr
+        torch.save((dataset.data, dataset.slices), self.processed_paths[1])
 
-    @property
-    def raw_file_names(self):
-        return ["data.pt"]
+    def process(self):
+        """
+        Process either a full batch or cluster data.
 
-    @property
-    def processed_file_names(self):
+        :return:
+        """
+        data, _ = torch.load(self.processed_paths[1])
         if self.num_parts == 1:
-            return [f'byg.data.aug.{self.augumentation.method}.pt']
+            data_list = self.process_full_batch_data(data)
         else:
-            return [f'byg.data.aug.{self.augumentation.method}.ip.{self.num_parts}.fp.{self.final_parts}.pt']
+            data_list = self.process_cluster_data(data)
+        data, slices = self.collate(data_list)
+        torch.save((data, slices), self.processed_paths[0])
+        
+    def process_full_batch_data(self, view1data):
+        """
+        Augmented view data generation using the full-batch data.
 
-    @property
-    def raw_dir(self):
-        return osp.join(self.data_dir, "raw")
-
-    @property
-    def processed_dir(self):
-        return osp.join(self.data_dir, "processed")
-
-    @property
-    def model_dir(self):
-        return osp.join(self.data_dir, "model")
-
-    @property
-    def result_dir(self):
-        return osp.join(self.data_dir, "result")
-
-    @property
-    def dirs(self):
-        return [self.raw_dir, self.processed_dir, self.model_dir, self.result_dir]
+        :param view1data:
+        :return:
+        """
+        print("Processing full batch data")
+        view2data = view1data if self.augumentation is None else self.augumentation(view1data)
+        diff = abs(view2data.x.shape[1] - view1data.x.shape[1])
+        if diff > 0:
+            """
+            Data augmentation on the features could lead to mismatch between the shape of the two views,
+            hence the smaller view should be padded with zero. (smaller_data is a reference, changes will
+            reflect on the original data)
+            """
+            smaller_data = view1data if view1data.x.shape[1] < view2data.x.shape[1] else view2data
+            smaller_data.x = F.pad(smaller_data.x, pad=(0, diff))
+            view1data.x = F.normalize(view1data.x)
+            view2data.x = F.normalize(view2data.x)
+        
+        nodes = torch.tensor(np.arange(view1data.num_nodes), dtype=torch.long)
+        data = Data(nodes=nodes, edge_index=view1data.edge_index, edge_index2=view2data.edge_index,
+                    edge_attr=view1data.edge_attr,
+                    edge_attr2=view2data.edge_attr, x=view1data.x, x2=view2data.x, y=view1data.y,
+                    train_mask=view1data.train_mask,
+                    dev_mask=view1data.val_mask, test_mask=view1data.test_mask, num_nodes=view1data.num_nodes)
+        return [data]
 
     def process_cluster_data(self, data):
         """
-        Augmented view data generation based on clustering.
+        Data processing for ClusterSelfGNN. First the data object will be clustered according to the number of partition
+        specified by this class. Then, we randomly sample a number of clusters and merge them together. Finally, data 
+        augmentation is applied each of the final clusters. This is a simple strategy motivated by ClusterGCN and 
+        employed to improve the scalability of SelfGNN.
 
-        :param data:
-        :return:
+        :param data: A PyTorch Geometric Data object
+        :return: a list of Data objects depending on the final number of clusters.
         """
         data_list = []
         clusters = []
@@ -111,11 +102,9 @@ class Dataset(InMemoryDataset):
 
         # Randomly merge clusters and apply transformation
         np.random.shuffle(clusters)
-        for i in range(0, len(clusters), cluster_size):
+        for i in tqdm(range(0, len(clusters), cluster_size), "Processing clusters"):
             end = i + cluster_size if len(clusters) - i > cluster_size else len(clusters)
             cls_nodes = torch.cat(clusters[i:end]).unique()
-            sys.stdout.write(f'\rProcessing cluster {i + 1}/{len(clusters)} with {self.final_parts} nodes')
-            sys.stdout.flush()
 
             x = data.x[cls_nodes]
             y = data.y[cls_nodes]
@@ -140,57 +129,47 @@ class Dataset(InMemoryDataset):
             data_list.append(new_data)
         print()
         return data_list
+    
+    @property
+    def name(self):
+        return osp.split(self.root)[1]
 
-    def process_full_batch_data(self, view1data):
-        """
-        Augmented view data generation using the full-batch data.
+    @property
+    def raw_file_names(self):
+        return []
 
-        :param view1data:
-        :return:
-        """
-        print("Processing full batch data")
-        view2data = view1data if self.augumentation is None else self.augumentation(view1data)
-        diff = abs(view2data.x.shape[1] - view1data.x.shape[1])
-        if diff > 0:
-            """
-            Data augmentation on the features could lead to mismatch between the shape of the two views,
-            hence the smaller view should be padded with zero. (smaller_data is a reference, changes will
-            reflect on the original data)
-            """
-            smaller_data = view1data if view1data.x.shape[1] < view2data.x.shape[1] else view2data
-            smaller_data.x = F.pad(smaller_data.x, pad=(0, diff))
-            view1data.x = F.normalize(view1data.x)
-            view2data.x = F.normalize(view2data.x)
-        print(view1data)
-        print(view2data)
-        nodes = torch.tensor(np.arange(view1data.num_nodes), dtype=torch.long)
-        data = Data(nodes=nodes, edge_index=view1data.edge_index, edge_index2=view2data.edge_index,
-                    edge_attr=view1data.edge_attr,
-                    edge_attr2=view2data.edge_attr, x=view1data.x, x2=view2data.x, y=view1data.y,
-                    train_mask=view1data.train_mask,
-                    dev_mask=view1data.val_mask, test_mask=view1data.test_mask, num_nodes=view1data.num_nodes)
-        return [data]
+    @property
+    def processed_file_names(self):
+        if self.num_parts == 1:
+            return [f'byg.data.aug.{self.augumentation.method}.pt', "data.pt"]
+        else:
+            return [f'byg.data.aug.{self.augumentation.method}.ip.{self.num_parts}.fp.{self.final_parts}.pt', "data.pt"]
 
-    def download(self):
-        pass
+    @property
+    def model_dir(self):
+        return osp.join(self.root, "model")
 
-    def process(self):
-        """
-        Process either a full batch or cluster data.
+    @property
+    def result_dir(self):
+        return osp.join(self.root, "result")
 
-        :return:
-        """
-        processed_path = osp.join(self.processed_dir, self.processed_file_names[0])
-        if not osp.exists(processed_path):
-            path = osp.join(self.raw_dir, self.raw_file_names[0])
-            data, _ = torch.load(path)
-            edge_attr = data.edge_attr
-            edge_attr = torch.ones(data.edge_index.shape[1]) if edge_attr is None else edge_attr
-            data.edge_attr = edge_attr
+    @property
+    def dirs(self):
+        return [self.raw_dir, self.processed_dir, self.model_dir, self.result_dir]
 
-            if self.num_parts == 1:
-                data_list = self.process_full_batch_data(data)
-            else:
-                data_list = self.process_cluster_data(data)
-            data, slices = self.collate(data_list)
-            torch.save((data, slices), processed_path)
+    
+def fetch_dataset(root, name):
+    """
+    Fetchs datasets from the PyTorch Geometric library
+    
+    :param root: A path to the root directory a dataset will be placed
+    :param name: Name of the dataset. Currently, the following names are supported
+                'cora', 'citeseer', "pubmed", 'Computers', "Photo", 'CS',  'Physics'
+    :return: A PyTorch Geometric dataset
+    """
+    if name.lower() in {'cora', 'citeseer', "pubmed"}:
+        return Planetoid(root=root, name=name)
+    elif name.lower() in {'computers', "photo"}:
+        return Amazon(root=root, name=name)
+    elif name.lower() in {'cs',  'physics'}:
+        return Coauthor(root=root, name=name)
