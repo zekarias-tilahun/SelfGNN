@@ -24,7 +24,21 @@ $ python src/train.py
 
 ## :collision: Updates 
 
-### Apr 9, 2021
+## update 2:
+
+\begin{table}[]
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+Modules & \multicolumn{15}{c|}{Normalization Strategy} \\ \hline
+Encoder & \multicolumn{4}{c|}{BN} & \multicolumn{4}{c|}{LN} & \multicolumn{4}{c|}{-} & \multicolumn{3}{c|}{-} \\ \hline
+Projector & \multicolumn{2}{c|}{BN} & \multicolumn{2}{c|}{-} & \multicolumn{2}{c|}{LN} & \multicolumn{2}{c|}{-} & \multicolumn{2}{c|}{BN} & \multicolumn{2}{c|}{LN} & \multicolumn{3}{c|}{-} \\ \hline
+Predictor & BN & - & BN & - & LN & - & LN & - & BN & - & LN & - & BN & LN & - \\ \hline
+SelfGNN & 94.05±0.23 & 94.2±0.17 & 94.01±0.20 & 93.9±0.18 & 81.42±2.43 & 84.1±1.58 & 92.39±0.38 & 91.93±0.40 & 90.01±0.09 & 90.12±0.07 & 45.34±2.47 & 52.92±3.37 & 91.13±0.13 & 50.64±2.84 & 50.35±2.73 \\ \hline
+\end{tabular}
+\end{table}
+
+
+## update 1:
 
 - Both the paper and the source code are updated following the discussion on [this issue](https://github.com/zekarias-tilahun/SelfGNN/issues/1)
 - Ablation study on the impact of ```BatchNorm``` added following reviewers feedback from SSL'21
