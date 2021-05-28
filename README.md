@@ -28,6 +28,7 @@ $ python src/train.py
 
 Contrary to what we've claimed in the paper, [studies](https://arxiv.org/abs/2010.10241) argue and empirically show that Batch Norm does not introduce implicit negative samples.
 Instead, mainly it compensate for improper initialization. New experiments that we have carried out, as shown in the table below, seems to confirm this argument.
+(`BN`:Batch Norm, `LN`:Layer Norm, `-`: No Norm )
 
 ![Normalization experimental results](./img/norm_experiment.png)
 
