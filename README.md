@@ -26,17 +26,78 @@ $ python src/train.py
 
 ## update 2:
 
-\begin{table}[]
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
-\hline
-Modules & \multicolumn{15}{c|}{Normalization Strategy} \\ \hline
-Encoder & \multicolumn{4}{c|}{BN} & \multicolumn{4}{c|}{LN} & \multicolumn{4}{c|}{-} & \multicolumn{3}{c|}{-} \\ \hline
-Projector & \multicolumn{2}{c|}{BN} & \multicolumn{2}{c|}{-} & \multicolumn{2}{c|}{LN} & \multicolumn{2}{c|}{-} & \multicolumn{2}{c|}{BN} & \multicolumn{2}{c|}{LN} & \multicolumn{3}{c|}{-} \\ \hline
-Predictor & BN & - & BN & - & LN & - & LN & - & BN & - & LN & - & BN & LN & - \\ \hline
-SelfGNN & 94.05±0.23 & 94.2±0.17 & 94.01±0.20 & 93.9±0.18 & 81.42±2.43 & 84.1±1.58 & 92.39±0.38 & 91.93±0.40 & 90.01±0.09 & 90.12±0.07 & 45.34±2.47 & 52.92±3.37 & 91.13±0.13 & 50.64±2.84 & 50.35±2.73 \\ \hline
-\end{tabular}
-\end{table}
-
+<style type="text/css">
+.tg  {border-collapse:collapse;border-color:#9ABAD9;border-spacing:0;}
+.tg td{background-color:#EBF5FF;border-color:#9ABAD9;border-style:solid;border-width:1px;color:#444;
+  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{background-color:#409cff;border-color:#9ABAD9;border-style:solid;border-width:1px;color:#fff;
+  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-svo0{background-color:#D2E4FC;border-color:inherit;text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-c3ow">Modules</th>
+    <th class="tg-c3ow" colspan="15">Normalization Strategy</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-svo0">Encoder</td>
+    <td class="tg-svo0" colspan="4">BN</td>
+    <td class="tg-svo0" colspan="4">LN</td>
+    <td class="tg-svo0" colspan="4">-</td>
+    <td class="tg-svo0" colspan="3">-</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Projector</td>
+    <td class="tg-c3ow" colspan="2">BN</td>
+    <td class="tg-c3ow" colspan="2">-</td>
+    <td class="tg-c3ow" colspan="2">LN</td>
+    <td class="tg-c3ow" colspan="2">-</td>
+    <td class="tg-c3ow" colspan="2">BN</td>
+    <td class="tg-c3ow" colspan="2">LN</td>
+    <td class="tg-c3ow" colspan="3">-</td>
+  </tr>
+  <tr>
+    <td class="tg-svo0">Predictor</td>
+    <td class="tg-svo0">BN</td>
+    <td class="tg-svo0">-</td>
+    <td class="tg-svo0">BN</td>
+    <td class="tg-svo0">-</td>
+    <td class="tg-svo0">LN</td>
+    <td class="tg-svo0">-</td>
+    <td class="tg-svo0">LN</td>
+    <td class="tg-svo0">-</td>
+    <td class="tg-svo0">BN</td>
+    <td class="tg-svo0">-</td>
+    <td class="tg-svo0">LN</td>
+    <td class="tg-svo0">-</td>
+    <td class="tg-svo0">BN</td>
+    <td class="tg-svo0">LN</td>
+    <td class="tg-svo0">-</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">SelfGNN</td>
+    <td class="tg-c3ow">94.05±0.23</td>
+    <td class="tg-c3ow">94.2±0.17</td>
+    <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">94.01</span>±0.20</td>
+    <td class="tg-c3ow">93.9±0.18</td>
+    <td class="tg-c3ow">81.42±2.43</td>
+    <td class="tg-c3ow">84.1±1.58</td>
+    <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">92.39</span>±0.38</td>
+    <td class="tg-c3ow">91.93±0.40</td>
+    <td class="tg-c3ow">90.01±0.09</td>
+    <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">90.12</span>±0.07</td>
+    <td class="tg-c3ow">45.34±2.47</td>
+    <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">52.92</span>±3.37</td>
+    <td class="tg-c3ow">91.13±0.13</td>
+    <td class="tg-c3ow">50.64±2.84</td>
+    <td class="tg-c3ow">50.35±2.73</td>
+  </tr>
+</tbody>
+</table>
 
 ## update 1:
 
