@@ -30,7 +30,126 @@ Contrary to what we've claimed in the paper, [studies](https://arxiv.org/abs/201
 Instead, mainly it compensate for improper initialization. New experiments that we have carried out, as shown in the table below, seems to confirm this argument.
 (`BN`:Batch Norm, `LN`:Layer Norm, `-`: No Norm ). For this experiment, we use the Amazon (Photo) dataset and a GCN backbone.
 
-![Normalization experimental results](./img/norm_experiment.png)
+
+<table>
+<thead>
+  <tr>
+    <th colspan="3">Modules</th>
+    <th colspan="3">Dataset</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>Encoder</td>
+    <td>Projector</td>
+    <td>Predictor</td>
+    <td>Photo</td>
+    <td>Computer</td>
+    <td>Citeseer</td>
+  </tr>
+  <tr>
+    <td rowspan="4">BN</td>
+    <td rowspan="2">BN</td>
+    <td>BN</td>
+    <td>94.05±0.23</td>
+    <td>88.83±0.17</td>
+    <td>77.7680,0.57</td>
+  </tr>
+  <tr>
+    <td>-</td>
+    <td>94.2±0.17</td>
+    <td>88.78±0.20</td>
+    <td>75.4880,0.70</td>
+  </tr>
+  <tr>
+    <td rowspan="2">-</td>
+    <td>BN</td>
+    <td>94.01±0.20</td>
+    <td>88.65±0.16</td>
+    <td>78.6620,0.52</td>
+  </tr>
+  <tr>
+    <td>-</td>
+    <td>93.9±0.18</td>
+    <td>88.82±0.16</td>
+    <td>78.5300,0.47</td>
+  </tr>
+  <tr>
+    <td rowspan="4">LN</td>
+    <td rowspan="2">LN</td>
+    <td>LN</td>
+    <td>81.42±2.43</td>
+    <td>64.10±3.29</td>
+    <td>74.0640,1.07</td>
+  </tr>
+  <tr>
+    <td>-</td>
+    <td>84.1±1.58</td>
+    <td>68.18±3.21</td>
+    <td>74.2620,0.55</td>
+  </tr>
+  <tr>
+    <td rowspan="2">-</td>
+    <td>LN</td>
+    <td>92.39±0.38</td>
+    <td>77.18±1.23</td>
+    <td>73.8480,0.73</td>
+  </tr>
+  <tr>
+    <td>-</td>
+    <td>91.93±0.40</td>
+    <td>73.90±1.16</td>
+    <td>74.1140,0.73</td>
+  </tr>
+  <tr>
+    <td rowspan="4">-</td>
+    <td rowspan="2">BN</td>
+    <td>BN</td>
+    <td>90.01±0.09</td>
+    <td>77.83±0.12</td>
+    <td>79.2120,0.27</td>
+  </tr>
+  <tr>
+    <td>-</td>
+    <td>90.12±0.07</td>
+    <td>76.43±0.08</td>
+    <td>75.1100,0.15</td>
+  </tr>
+  <tr>
+    <td rowspan="2">LN</td>
+    <td>LN</td>
+    <td>45.34±2.47</td>
+    <td>40.56±1.48</td>
+    <td>56.2920,0.77</td>
+  </tr>
+  <tr>
+    <td>-</td>
+    <td>52.92±3.37</td>
+    <td>40.23±1.46</td>
+    <td>60.7640,0.81</td>
+  </tr>
+  <tr>
+    <td rowspan="3">-</td>
+    <td rowspan="3">-</td>
+    <td>BN</td>
+    <td>91.13±0.13</td>
+    <td>81.79±0.11</td>
+    <td>79.3420,0.21</td>
+  </tr>
+  <tr>
+    <td>LN</td>
+    <td>50.64±2.84</td>
+    <td>47.62±2.27</td>
+    <td>64.1800,1.08</td>
+  </tr>
+  <tr>
+    <td>-</td>
+    <td>50.35±2.73</td>
+    <td>43.68±1.80</td>
+    <td>63.9120,0.92</td>
+  </tr>
+</tbody>
+</table>
 
 #### update 1
 
@@ -96,7 +215,7 @@ Default is 1.
 
 ## Supported dataset names
 
-| name        | Description | Edges   | Features | Classes | Description                   |
+| Name        | Nodes       | Edges   | Features | Classes | Description                   |
 | ----------- | ----------- | ------- | -------- | ------- | ----------------------------- |
 | `Cora`      | 2,708       | 5,278   | 1,433    | 7       | Citation Network              |
 | `Citeseer`  | 3,327       | 4,552   | 3,703    | 6       | Citation Network              |
