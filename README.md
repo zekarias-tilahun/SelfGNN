@@ -53,26 +53,26 @@ Instead, mainly it compensate for improper initialization. New experiments that 
     <td>BN</td>
     <td>94.05±0.23</td>
     <td>88.83±0.17</td>
-    <td>77.7680,0.57</td>
+    <td>77.76±0.57</td>
   </tr>
   <tr>
     <td>-</td>
     <td>94.2±0.17</td>
     <td>88.78±0.20</td>
-    <td>75.4880,0.70</td>
+    <td>75.48±0.70</td>
   </tr>
   <tr>
     <td rowspan="2">-</td>
     <td>BN</td>
     <td>94.01±0.20</td>
     <td>88.65±0.16</td>
-    <td>78.6620,0.52</td>
+    <td>78.66±0.52</td>
   </tr>
   <tr>
     <td>-</td>
     <td>93.9±0.18</td>
     <td>88.82±0.16</td>
-    <td>78.5300,0.47</td>
+    <td>78.53±0.47</td>
   </tr>
   <tr>
     <td rowspan="4">LN</td>
@@ -80,26 +80,26 @@ Instead, mainly it compensate for improper initialization. New experiments that 
     <td>LN</td>
     <td>81.42±2.43</td>
     <td>64.10±3.29</td>
-    <td>74.0640,1.07</td>
+    <td>74.06±1.07</td>
   </tr>
   <tr>
     <td>-</td>
     <td>84.1±1.58</td>
     <td>68.18±3.21</td>
-    <td>74.2620,0.55</td>
+    <td>74.26±0.55</td>
   </tr>
   <tr>
     <td rowspan="2">-</td>
     <td>LN</td>
     <td>92.39±0.38</td>
     <td>77.18±1.23</td>
-    <td>73.8480,0.73</td>
+    <td>73.84±0.73</td>
   </tr>
   <tr>
     <td>-</td>
     <td>91.93±0.40</td>
     <td>73.90±1.16</td>
-    <td>74.1140,0.73</td>
+    <td>74.11±0.73</td>
   </tr>
   <tr>
     <td rowspan="4">-</td>
@@ -107,26 +107,26 @@ Instead, mainly it compensate for improper initialization. New experiments that 
     <td>BN</td>
     <td>90.01±0.09</td>
     <td>77.83±0.12</td>
-    <td>79.2120,0.27</td>
+    <td>79.21±0.27</td>
   </tr>
   <tr>
     <td>-</td>
     <td>90.12±0.07</td>
     <td>76.43±0.08</td>
-    <td>75.1100,0.15</td>
+    <td>75.10±0.15</td>
   </tr>
   <tr>
     <td rowspan="2">LN</td>
     <td>LN</td>
     <td>45.34±2.47</td>
     <td>40.56±1.48</td>
-    <td>56.2920,0.77</td>
+    <td>56.29±0.77</td>
   </tr>
   <tr>
     <td>-</td>
     <td>52.92±3.37</td>
     <td>40.23±1.46</td>
-    <td>60.7640,0.81</td>
+    <td>60.76±0.81</td>
   </tr>
   <tr>
     <td rowspan="3">-</td>
@@ -134,19 +134,19 @@ Instead, mainly it compensate for improper initialization. New experiments that 
     <td>BN</td>
     <td>91.13±0.13</td>
     <td>81.79±0.11</td>
-    <td>79.3420,0.21</td>
+    <td>79.34±0.21</td>
   </tr>
   <tr>
     <td>LN</td>
     <td>50.64±2.84</td>
     <td>47.62±2.27</td>
-    <td>64.1800,1.08</td>
+    <td>64.18±1.08</td>
   </tr>
   <tr>
     <td>-</td>
     <td>50.35±2.73</td>
     <td>43.68±1.80</td>
-    <td>63.9120,0.92</td>
+    <td>63.91±0.92</td>
   </tr>
 </tbody>
 </table>
