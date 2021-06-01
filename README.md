@@ -29,6 +29,8 @@ $ python src/train.py
 Contrary to what we've claimed in the paper, [studies](https://arxiv.org/abs/2010.10241) argue and empirically show that Batch Norm does not introduce implicit negative samples.
 Instead, mainly it compensate for improper initialization. We have carried out new and similar experiments, as shown in the table below, that seems to confirm this argument.
 (`BN`:Batch Norm, `LN`:Layer Norm, `-`: No Norm ). For this experiment we use a GCN encoder and split data-augmentation.
+Though `BN` does not provide implicit negative samples, the empirical evaluation shows that it leads to a better performance; putting it in the encoder is almost sufficient.
+`LN` on the other hand is not cosistent; furthemore, the model tends to prefer having `BN` than `LN` in any of the modules.
 
 
 <table>
