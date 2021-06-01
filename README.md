@@ -27,14 +27,14 @@ $ python src/train.py
 #### update 2
 
 Contrary to what we've claimed in the paper, [studies](https://arxiv.org/abs/2010.10241) argue and empirically show that Batch Norm does not introduce implicit negative samples.
-Instead, mainly it compensate for improper initialization. New experiments that we have carried out, as shown in the table below, seems to confirm this argument.
-(`BN`:Batch Norm, `LN`:Layer Norm, `-`: No Norm ). For this experiment, we use the Amazon (Photo) dataset and a GCN backbone.
+Instead, mainly it compensate for improper initialization. We have carried out new and similar experiments, as shown in the table below, that seems to confirm this argument.
+(`BN`:Batch Norm, `LN`:Layer Norm, `-`: No Norm ). For this experiment we use a GCN encoder and split data-augmentation.
 
 
 <table>
 <thead>
   <tr>
-    <th colspan="3">Modules</th>
+    <th colspan="3">Module</th>
     <th colspan="3">Dataset</th>
   </tr>
 </thead>
@@ -45,7 +45,7 @@ Instead, mainly it compensate for improper initialization. New experiments that 
     <td>Predictor</td>
     <td>Photo</td>
     <td>Computer</td>
-    <td>Citeseer</td>
+    <td>Pubmed</td>
   </tr>
   <tr>
     <td rowspan="4">BN</td>
