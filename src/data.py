@@ -141,9 +141,9 @@ class Dataset(InMemoryDataset):
     @property
     def processed_file_names(self):
         if self.num_parts == 1:
-            return [f'byg.data.aug.{self.augumentation.method}.pt', "data.pt"]
+            return [f'data.aug.{self.augumentation.method}.pt', "data.pt"]
         else:
-            return [f'byg.data.aug.{self.augumentation.method}.ip.{self.num_parts}.fp.{self.final_parts}.pt', "data.pt"]
+            return [f'data.aug.{self.augumentation.method}.ip.{self.num_parts}.fp.{self.final_parts}.pt', "data.pt"]
 
     @property
     def model_dir(self):
