@@ -184,24 +184,27 @@ class ModelTrainer:
         
         dev_accs, test_accs = [], []
         args = self._args
-        for i in range(50):
+        iters = 20 if len(self._train_mask.shape) == 1 else self._train_mask.shape[1]
+        for i in range(iters):
             classifier = models.LogisticRegression(emb_dim, num_class).to(self._device)
             optimizer = torch.optim.Adam(classifier.parameters(), lr=0.01, weight_decay=0.0)
-
+            mask_index = None if len(self._train_mask.shape) == 1 else i
+            train_mask, dev_mask, test_mask = index_mask(
+                self._train_mask, self._dev_mask, self._test_mask, index=i)
             for _ in range(100):
                 classifier.train()
-                logits, loss = classifier(self._embeddings[self._train_mask], self._labels[self._train_mask])
+                logits, loss = classifier(self._embeddings[train_mask], self._labels[train_mask])
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
             
-            dev_logits, _ = classifier(self._embeddings[self._dev_mask], self._labels[self._dev_mask])
-            test_logits, _ = classifier(self._embeddings[self._test_mask], self._labels[self._test_mask])
+            dev_logits, _ = classifier(self._embeddings[dev_mask], self._labels[dev_mask])
+            test_logits, _ = classifier(self._embeddings[test_mask], self._labels[test_mask])
             dev_preds = torch.argmax(dev_logits, dim=1)
             test_preds = torch.argmax(test_logits, dim=1)
             
-            dev_acc = (torch.sum(dev_preds == self._labels[self._dev_mask]).float() / self._labels[self._dev_mask].shape[0]).detach().cpu().numpy()
-            test_acc = (torch.sum(test_preds == self._labels[self._test_mask]).float() / self._labels[self._test_mask].shape[0]).detach().cpu().numpy()
+            dev_acc = (torch.sum(dev_preds == self._labels[dev_mask]).float() / self._labels[dev_mask].shape[0]).detach().cpu().numpy()
+            test_acc = (torch.sum(test_preds == self._labels[test_mask]).float() / self._labels[test_mask].shape[0]).detach().cpu().numpy()
             dev_accs.append(dev_acc * 100)
             test_accs.append(test_acc * 100)
             print("Finished iteration {:02} of the logistic regression classifier. Validation accuracy {:.2f} test accuracy {:.2f}".format(i + 1, dev_acc, test_acc))
@@ -219,7 +222,15 @@ class ModelTrainer:
             f.write(f"{args.name},{args.model},{dev_acc:.4f},{dev_std:.2f},{test_acc:.4f},{test_std:.2f}")
         print('Average validation accuracy: {:.2f} with std: {}'.format(dev_acc, dev_std))
         print('Average test accuracy: {:.2f} with std: {:.2f}'.format(test_acc, test_std))
+        return dev_acc, dev_std, test_acc, test_std
         
+
+def index_mask(train_mask, val_mask=None, test_mask=None, index=0):
+    train_mask = train_mask if len(train_mask.shape) == 1 else train_mask[:, index]
+    val_mask = val_mask if val_mask is None or len(val_mask.shape) == 1 else val_mask[:, index]
+    test_mask = test_mask if test_mask is None or len(test_mask.shape) == 1 else test_mask[:, index]
+    return train_mask, val_mask, test_mask
+
         
 def train_search_eval(args):
     """
@@ -242,6 +253,7 @@ def train_eval(args):
 
 def main():
     args = utils.parse_args()
+    print(args)
     train_eval(args)
 
 

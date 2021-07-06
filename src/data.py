@@ -1,4 +1,4 @@
-from torch_geometric.datasets import Planetoid, Coauthor, Amazon, WikiCS
+from torch_geometric.datasets import Planetoid, Coauthor, Amazon, WikiCS, Actor
 from torch_geometric.data import Data, ClusterData, InMemoryDataset
 from torch_geometric.utils import subgraph
 
@@ -167,9 +167,14 @@ def fetch_dataset(root, name):
                 'cora', 'citeseer', "pubmed", 'Computers', "Photo", 'CS',  'Physics'
     :return: A PyTorch Geometric dataset
     """
+    print(name.lower())
     if name.lower() in {'cora', 'citeseer', "pubmed"}:
         return Planetoid(root=root, name=name)
     elif name.lower() in {'computers', "photo"}:
         return Amazon(root=root, name=name)
     elif name.lower() in {'cs',  'physics'}:
         return Coauthor(root=root, name=name)
+    elif name.lower() == "wiki":
+        return WikiCS(osp.join(root, "WikiCS"))
+    elif name.lower() == "actor":
+        return Actor(osp.join(root, name))

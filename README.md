@@ -15,6 +15,7 @@ This is an ongoing work and the repository is subjected to continuous updates.
 -   Numpy 1.17.2+
 -   Networkx 2.3+
 -   SciPy 1.5.4+
+-   (OPTINAL) OPTUNA 2.8.0+ ```If you wish to tune the hyper-parameters of SelfGNN for any dataset```
 
 ## Example usage
 
@@ -24,7 +25,17 @@ $ python src/train.py
 
 ## :collision: Updates 
 
-#### update 2
+#### Update 3
+
+Added a hyper-parameter tuning utility using [OPTUNA](https://optuna.readthedocs.io/en/stable/index.html).
+
+`usage:`
+
+```sh
+$ python src/tune.py
+```
+
+#### Update 2
 
 Contrary to what we've claimed in the paper, [studies](https://arxiv.org/abs/2010.10241) argue and empirically show that Batch Norm does not introduce implicit negative samples.
 Instead, mainly it compensate for improper initialization. We have carried out new and similar experiments, as shown in the table below, that seems to confirm this argument.
@@ -153,7 +164,7 @@ Though `BN` does not provide implicit negative samples, the empirical evaluation
 </tbody>
 </table>
 
-#### update 1
+#### Update 1
 
 - Both the paper and the source code are updated following the discussion on [this issue](https://github.com/zekarias-tilahun/SelfGNN/issues/1)
 - Ablation study on the impact of ```BatchNorm``` added following reviewers feedback from SSL'21

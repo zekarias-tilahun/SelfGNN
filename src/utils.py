@@ -15,6 +15,7 @@ import os
 
 import subprocess
 import argparse
+import yaml
 
 import scipy.sparse as sp
 import numpy as np
@@ -131,9 +132,9 @@ def get_norm_configs(norms):
     elif len(norms) == 3:
         return {"encoder_norm": norms[0], "prj_head_norm": norms[1], "prd_head_norm": norms[2]}
 
-def parse_args():
+def parse_args(check_for_tuned=True):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", "-r", type=str, default="data",
+    parser.add_argument("--root", "-r", type=str, default="~/workspace/data/SelfGNN",
                         help="Path to data directory, where all the datasets will be placed. Default is 'data'")
     parser.add_argument("--name", "-n", type=str, default="cora",
                         help="Name of the dataset. Supported names are: cora, citeseer, pubmed, photo, computers, cs, and physics")
@@ -162,7 +163,14 @@ def parse_args():
                         help="The step size to cache the model, that is, every cache_step the model is persisted. Default is 100.")
     parser.add_argument("--epochs", '-e', type=int,
                         default=1000, help="The number of epochs")
-    return parser.parse_args()
+    parser.add_argument("--trials", '-tr', type=int,
+                        default=100, help="The number of trials used for hyper-parameter tuning. Default is 100")
+    args = parser.parse_args()
+    if check_for_tuned:
+        path = osp.join(osp.expanduser(args.root), args.name, "processed", "tuned_params.yml")
+        if osp.exists(path):
+            load_tuned_params(args, path)
+    return args
 
 
 def create_dirs(dirs):
@@ -266,3 +274,22 @@ def get_device_id(cuda_is_available):
     gpu_index = stats[:, 1].argmax()
     available_mem_on_gpu = stats[gpu_index][1] - stats[gpu_index][0]
     return gpu_index if available_mem_on_gpu > 5000 else -1
+
+
+def load_tuned_params(args, path):
+    print("Loading tuned hyper-parameters, which are:")
+    with open(path) as f:
+        params = yaml.safe_load(f)
+    print("=======================================")
+    for k, v in params.items():
+        print(f"\t\t{k}: {v}")
+    print("=======================================")
+        
+    args.lr = params["lr"]
+    args.dropout = params["dropout"]
+    args.aug = params['aug']
+    enc_norm = params['encoder_norm']
+    prj_norm = params['proj_norm']
+    prd_norm = params['pred_norm']
+    args.norms = [enc_norm, prj_norm, prd_norm]
+    args.layers = [params['hidden_layer'], 128]
