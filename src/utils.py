@@ -134,9 +134,9 @@ def get_norm_configs(norms):
 
 def parse_args(check_for_tuned=True):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", "-r", type=str, default="~/workspace/data/SelfGNN",
+    parser.add_argument("--root", "-r", type=str, default="./data",
                         help="Path to data directory, where all the datasets will be placed. Default is 'data'")
-    parser.add_argument("--name", "-n", type=str, default="cora",
+    parser.add_argument("--name", "-n", type=str, default="Photo",
                         help="Name of the dataset. Supported names are: cora, citeseer, pubmed, photo, computers, cs, and physics")
     parser.add_argument("--model", '-m', type=str, default="gcn",
                         help="The type of GNN architecture. Supported architectures are: gcn, gat, and sage. Default is gcn")

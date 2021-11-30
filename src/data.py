@@ -155,7 +155,7 @@ class Dataset(InMemoryDataset):
 
     @property
     def dirs(self):
-        return [self.raw_dir, self.processed_dir, self.model_dir, self.result_dir]
+        return [self.root, self.raw_dir, self.processed_dir, self.model_dir, self.result_dir]
 
     
 def fetch_dataset(root, name):
